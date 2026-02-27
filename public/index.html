@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Connect - Login</title>
+  <meta name="description" content="Library Connect - Complete library management solution">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="auth-container">
+    <!-- Left branding panel -->
+    <div class="auth-brand">
+      <div class="auth-brand-content">
+        <div class="auth-brand-logo">📚</div>
+        <h1>Library Connect</h1>
+        <p>Your complete library management solution. Manage books, track issues, and streamline returns with ease.</p>
+        <div class="auth-stats">
+          <div class="auth-stat">
+            <div class="stat-num">1000+</div>
+            <div class="stat-label">Books</div>
+          </div>
+          <div class="auth-stat">
+            <div class="stat-num">500+</div>
+            <div class="stat-label">Users</div>
+          </div>
+          <div class="auth-stat">
+            <div class="stat-num">24/7</div>
+            <div class="stat-label">Access</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-form-panel">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="loginTab" onclick="switchTab('login')">Login</button>
+          <button class="auth-tab" id="registerTab" onclick="switchTab('register')">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <h2>Welcome back</h2>
+          <p class="auth-subtitle">Enter your credentials to access your account</p>
+
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="text" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn">Sign In</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+          <h2>Create account</h2>
+          <p class="auth-subtitle">Fill in your details to get started</p>
+
+          <div class="form-group">
+            <label for="regName">Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Email</label>
+            <input type="text" id="regEmail" class="form-control" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label for="regPassword">Password</label>
+            <input type="password" id="regPassword" class="form-control" placeholder="Create a password" required>
+          </div>
+          <div class="form-group">
+            <label for="regRole">Register As</label>
+            <select id="regRole" class="form-control">
+              <option value="student">Student</option>
+              <option value="librarian">Librarian</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="registerBtn">Create Account</button>
+        </form>
+
+        <div id="authMessage" class="hidden" style="margin-top:16px;text-align:center;font-size:0.85rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/auth.js"></script>
+</body>
+
+</html>

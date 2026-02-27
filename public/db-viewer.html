@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Viewer - Library Connect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #171717;
+            --bg-panel: #1c1c1c;
+            --bg-sidebar: #1c1c1c;
+            --bg-card: #232323;
+            --bg-row-hover: #2a2a2a;
+            --bg-header: #262626;
+            --border: #2e2e2e;
+            --border-light: #383838;
+            --text-primary: #ededed;
+            --text-secondary: #a1a1a1;
+            --text-muted: #666;
+            --green: #3ecf8e;
+            --green-bg: rgba(62, 207, 142, 0.12);
+            --yellow: #f5c542;
+            --yellow-bg: rgba(245, 197, 66, 0.12);
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --brand: #3ecf8e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ===== Top Bar ===== */
+        .topbar {
+            height: 48px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+        }
+
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .topbar-logo .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--brand);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .topbar-sep {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+        }
+
+        .topbar-project {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-btn {
+            padding: 5px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.15s;
+        }
+
+        .topbar-btn:hover {
+            border-color: var(--text-muted);
+            color: var(--text-primary);
+        }
+
+        .topbar-btn.green {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #111;
+        }
+
+        .topbar-btn.green:hover {
+            opacity: 0.9;
+        }
+
+        /* ===== Layout ===== */
+        .layout {
+            display: flex;
+            height: calc(100vh - 48px);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 240px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-section {
+            padding: 12px 0;
+        }
+
+        .sidebar-label {
+            padding: 6px 16px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.15s;
+            border-left: 2px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-row-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background: rgba(62, 207, 142, 0.06);
+            color: var(--brand);
+            border-left-color: var(--brand);
+        }
+
+        .sidebar-item .icon {
+            font-size: 0.9rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-item .count {
+            margin-left: auto;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: 0.15s;
+        }
+
+        .sidebar-footer a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ===== Main Content ===== */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Table header bar */
+        .table-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-panel);
+            flex-shrink: 0;
+        }
+
+        .table-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .table-schema {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .row-count {
+            margin-left: auto;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        .table-filter {
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            font-family: inherit;
+            outline: none;
+            min-width: 200px;
+        }
+
+        .table-filter:focus {
+            border-color: var(--brand);
+        }
+
+        /* ===== Data Table ===== */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .db-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .db-table th {
+            padding: 10px 16px;
+            text-align: left;
+            background: var(--bg-header);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .db-table th .col-type {
+            font-weight: 400;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: lowercase;
+            margin-left: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .db-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .db-table tr:hover td {
+            background: var(--bg-row-hover);
+        }
+
+        .db-table .pk-cell {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .db-table .null-val {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Type badges */
+        .type-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .type-badge.admin {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+        }
+
+        .type-badge.librarian {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .type-badge.student {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .type-badge.issued {
+            background: var(--yellow-bg);
+            color: var(--yellow);
+        }
+
+        .type-badge.returned {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        /* Row number */
+        .row-num {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            padding-right: 8px;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Empty state */
+        .empty-msg {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .topbar-project {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="topbar-logo">
+            <div class="logo-icon">📚</div>
+            Library Connect
+        </div>
+        <div class="topbar-sep"></div>
+        <div class="topbar-project">library_management_db</div>
+        <div class="topbar-right">
+            <span style="font-size:0.75rem;color:var(--text-muted);" id="lastUpdated"></span>
+            <button class="topbar-btn" onclick="loadData()">↻ Refresh</button>
+            <button class="topbar-btn green" onclick="window.location.href='dashboard.html'">← Back to App</button>
+        </div>
+    </div>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Database</div>
+                <div class="sidebar-item active" onclick="selectTable('users')" id="nav-users">
+                    <span class="icon">👤</span> users <span class="count" id="count-users">0</span>
+                </div>
+                <div class="sidebar-item" onclick="selectTable('books')" id="nav-books">
+                    <span class="icon">📚</span> books <span class="count" id="count-books">0</span>
+                </div>
+                <div class="sidebar-item" onclick="selectTable('records')" id="nav-records">
+                    <span class="icon">📋</span> records <span class="count" id="count-records">0</span>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Schema Info</div>
+                <div class="sidebar-item" style="cursor:default;font-size:0.75rem;">
+                    <span class="icon">🗄️</span> SQLite (sql.js)
+                </div>
+                <div class="sidebar-item" style="cursor:default;font-size:0.75rem;">
+                    <span class="icon">📊</span> 3 tables
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <a href="dashboard.html">← Return to dashboard</a>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="main">
+            <div class="table-toolbar">
+                <span class="table-name" id="tableName">users</span>
+                <span class="table-schema">public</span>
+                <input type="text" class="table-filter" id="filterInput" placeholder="Filter rows..."
+                    oninput="applyFilter()">
+                <span class="row-count" id="rowCount">0 rows</span>
+            </div>
+            <div class="table-container" id="tableContainer">
+                <div class="loading">
+                    <div class="spinner"></div> Loading data...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tablesData = {};
+        let currentTable = 'users';
+        let token = localStorage.getItem('token');
+
+        if (!token) window.location.href = 'index.html';
+
+        const COLUMN_TYPES = {
+            users: {
+                user_id: 'int4', name: 'text', email: 'text',
+                role: 'enum', created_at: 'timestamptz'
+            },
+            books: {
+                book_id: 'int4', title: 'text', author: 'text',
+                publisher: 'text', edition: 'text', category: 'text',
+                available_copies: 'int4', total_copies: 'int4', created_at: 'timestamptz'
+            },
+            records: {
+                record_id: 'int4', user_id: 'int4(fk)', book_id: 'int4(fk)',
+                user_name: 'join', user_email: 'join', book_title: 'join',
+                issue_date: 'timestamptz', due_date: 'timestamptz',
+                return_date: 'timestamptz', fine_amount: 'float4', status: 'enum'
+            }
+        };
+
+        async function loadData() {
+            try {
+                const res = await fetch('/api/db/tables', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.status === 401) { window.location.href = 'index.html'; return; }
+                if (res.status === 403) { alert('Admin access required.'); window.location.href = 'dashboard.html'; return; }
+
+                const data = await res.json();
+                tablesData = data.tables;
+
+                // Update counts
+                ['users', 'books', 'records'].forEach(t => {
+                    document.getElementById('count-' + t).textContent = tablesData[t].count;
+                });
+
+                document.getElementById('lastUpdated').textContent =
+                    'Updated: ' + new Date().toLocaleTimeString();
+
+                renderTable(currentTable);
+            } catch (err) {
+                document.getElementById('tableContainer').innerHTML =
+                    '<div class="empty-msg">⚠️ Failed to load database. Make sure you are logged in as Admin.</div>';
+            }
+        }
+
+        function selectTable(name) {
+            currentTable = name;
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + name).classList.add('active');
+            document.getElementById('tableName').textContent = name;
+            document.getElementById('filterInput').value = '';
+            renderTable(name);
+        }
+
+        function renderTable(name) {
+            const table = tablesData[name];
+            if (!table || table.rows.length === 0) {
+                document.getElementById('tableContainer').innerHTML =
+                    '<div class="empty-msg">No rows in this table.</div>';
+                document.getElementById('rowCount').textContent = '0 rows';
+                return;
+            }
+
+            const rows = table.rows;
+            const cols = Object.keys(rows[0]);
+            const types = COLUMN_TYPES[name] || {};
+
+            document.getElementById('rowCount').textContent = rows.length + ' rows';
+
+            let html = '<table class="db-table"><thead><tr>';
+            html += '<th style="width:40px;">#</th>';
+            cols.forEach(col => {
+                const type = types[col] || 'text';
+                html += `<th>${col} <span class="col-type">${type}</span></th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            rows.forEach((row, i) => {
+                html += `<tr data-search="${Object.values(row).join(' ').toLowerCase()}">`;
+                html += `<td class="row-num">${i + 1}</td>`;
+                cols.forEach((col, ci) => {
+                    let val = row[col];
+                    let cellClass = '';
+                    let display = '';
+
+                    if (val === null || val === undefined || val === '') {
+                        display = '<span class="null-val">NULL</span>';
+                    } else if (col.endsWith('_id') && ci === 0) {
+                        display = `<span class="pk-cell">${val}</span>`;
+                    } else if (col === 'role') {
+                        display = `<span class="type-badge ${val}">${val}</span>`;
+                    } else if (col === 'status') {
+                        display = `<span class="type-badge ${val}">${val}</span>`;
+                    } else if (col.endsWith('_date') || col === 'created_at') {
+                        display = formatTimestamp(val);
+                    } else if (col === 'fine_amount') {
+                        display = val > 0
+                            ? `<span style="color:#ef4444;">₹${val}</span>`
+                            : `<span style="color:var(--text-muted);">₹0</span>`;
+                    } else {
+                        display = escapeHtml(String(val));
+                    }
+
+                    html += `<td>${display}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('tableContainer').innerHTML = html;
+        }
+
+        function applyFilter() {
+            const q = document.getElementById('filterInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.db-table tbody tr');
+            let count = 0;
+            rows.forEach(row => {
+                const match = !q || row.dataset.search.includes(q);
+                row.style.display = match ? '' : 'none';
+                if (match) count++;
+            });
+            document.getElementById('rowCount').textContent = count + ' rows';
+        }
+
+        function formatTimestamp(val) {
+            if (!val) return '<span class="null-val">NULL</span>';
+            try {
+                const d = new Date(val);
+                return d.toLocaleString('en-IN', {
+                    year: 'numeric', month: 'short', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            } catch { return val; }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Load on start
+        loadData();
+    </script>
+</body>
+
+</html>
